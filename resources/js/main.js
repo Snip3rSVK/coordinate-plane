@@ -85,7 +85,6 @@ Line.instances = [];
 
 function setAttributesNS(namespace, elem, attrs) {
 	let elems;
-	console.log(elem);
 	if (elem.constructor === Array)
 		elems = elem;
 	else
@@ -163,10 +162,8 @@ function setupAxis() {
 
 function clickAndScroll() {
 	if (arguments[0] === "cancel" && Draggable.get(element.svgWrapper) !== undefined) {
-		console.log("clickAndScroll disabled");
 		Draggable.get(element.svgWrapper).disable();
 	} else if (Draggable.get(element.svgWrapper) === undefined) {
-		console.log("clickAndScroll created");
 		Draggable.create(element.svgWrapper, {
 			type: "scroll",
 			cursor: "default",
@@ -190,8 +187,7 @@ function clickAndScroll() {
 		TweenMax.set(element.svgWrapper, {
 			overflow: "hidden",
 		});
-	} else if (Draggable.get(element.svgWrapper).enabled() === false) { // if false
-		console.log("clickAndScroll enabled");
+	} else if (Draggable.get(element.svgWrapper).enabled() === false) {
 		Draggable.get(element.svgWrapper).enable();
 	}
 }
@@ -368,10 +364,8 @@ function pointsDraggable() {
 		if (arguments[0] === "cancel") {
 			if (Draggable.get(curr) !== undefined) {
 				Draggable.get(curr).disable();
-				console.log("pointsDraggable disabled");
 			}
 		} else if (Draggable.get(curr) === undefined || arguments[0] === "create") {
-			console.log("pointsDraggable created");
 			if (arguments[0] === "create") {
 				Draggable.get(curr).kill();
 			}
@@ -411,7 +405,6 @@ function pointsDraggable() {
 			});
 		} else if (Draggable.get(curr).enabled() === false) {
 			Draggable.get(curr).enable();
-			console.log("pointsDraggable enabled");
 		}
 	}
 }
