@@ -84,8 +84,15 @@ Point.instances = [];
 Line.instances = [];
 
 function setAttributesNS(namespace, elem, attrs) {
-    for (let prop in attrs)
-        elem.setAttributeNS(namespace, prop, attrs[prop]);
+	let elems;
+	console.log(elem);
+	if (elem.constructor === Array)
+		elems = elem;
+	else
+		elems = [elem];
+	for (const val of elems)
+		for (let prop in attrs)
+			val.setAttributeNS(namespace, prop, attrs[prop]);
 }
 // ======== INITIAL SETUPS ========
 setupSVG();
@@ -120,15 +127,17 @@ function setupAxis() {
     let i = 2 * snapBy, j = 1;
     while (i < svgSettings.height / 2 || i < svgSettings.width / 2) {
         if (i < svgSettings.height / 2) {
-            const numToSubstract = () => j < 10 ? 10 : 15;
             const textNegative = document.createElementNS("http://www.w3.org/2000/svg", "text");
             const textPositive = document.createElementNS("http://www.w3.org/2000/svg", "text");
             textNegative.textContent = `−${j}`;
             textPositive.textContent = j;
-            const negGbcr = textNegative.getBoundingClientRect().height;
-            const posGbcr = textPositive.getBoundingClientRect().height;
-            setAttributesNS(null, textNegative, { x: svgSettings.width / 2 - numToSubstract() - 5, y: svgSettings.height / 2 + i + 3});
-            setAttributesNS(null, textPositive, { x: svgSettings.width / 2 - numToSubstract(), y: svgSettings.height / 2 - i + 3});
+            setAttributesNS(null, [textNegative, textPositive], {
+				x: svgSettings.width / 2 - 5,
+				"text-anchor": "end",
+				"dominant-baseline": "central"
+            });
+            setAttributesNS(null, textNegative, { y: svgSettings.height / 2 + i });
+            setAttributesNS(null, textPositive, { y: svgSettings.height / 2 - i });
             numberWrapper.appendChild(textNegative);
             numberWrapper.appendChild(textPositive);
         }
@@ -137,22 +146,19 @@ function setupAxis() {
             const textPositive = document.createElementNS("http://www.w3.org/2000/svg", "text");
             textNegative.textContent = `−${j}`;
             textPositive.textContent = j;
+            setAttributesNS(null, [textNegative, textPositive], {
+				y: svgSettings.height / 2 + 6,
+				"text-anchor": "middle",
+				"dominant-baseline": "hanging" // nepodporuje edge - vyriešiť
+            });
+            setAttributesNS(null, textNegative, { x: svgSettings.width / 2 - i });
+            setAttributesNS(null, textPositive, { x: svgSettings.width / 2 + i });
             numberWrapper.appendChild(textNegative);
             numberWrapper.appendChild(textPositive);
-            const negGbcr = textNegative.getBoundingClientRect().width;
-            const posGbcr = textPositive.getBoundingClientRect().width;
-            setAttributesNS(null, textNegative, { x: svgSettings.width / 2 - i - negGbcr / 2, y: svgSettings.height / 2 + 12 });
-            setAttributesNS(null, textPositive, { x: svgSettings.width / 2 + i - posGbcr / 2, y: svgSettings.height / 2 + 12 });
         }
         i += 2 * snapBy;
         j++;
     }
-}
-
-function removeAxis() {
-	document.querySelector(".xAxis").remove();
-	document.querySelector(".yAxis").remove();
-	document.querySelector(".numberWrapper").remove();
 }
 
 function clickAndScroll() {
@@ -191,8 +197,6 @@ function clickAndScroll() {
 }
 
 window.addEventListener("resize", function () {
-	removeAxis();
-	setupAxis();
 	scrollToCenter();
 });
 
