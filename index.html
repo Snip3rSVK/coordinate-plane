@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+	<meta charset="UTF-8">
+	<title>Súradnicový systém</title>
+	<link rel="stylesheet" href="resources/css/reset.css">
+	<link rel="stylesheet" href="resources/css/main.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.2/TweenMax.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.2/utils/Draggable.min.js"></script>
+
+</head>
+<body>
+	<aside id="control-panel">
+		<div>
+			<div class="settings-icon-wrapper">
+				<svg viewBox="0 0 24 24" class="settings-icon"><path id="settings" d="M4.104 0l-4.104 4.152 18.888 18.799 5.112 1.049-.961-5.203-18.935-18.797zm15.946 21.502c-.167.166-.436.166-.602 0l-17.262-17.124c-.167-.167-.167-.435-.001-.603.166-.166.437-.166.603 0l17.262 17.126c.167.165.166.435 0 .601zm1.544-2.132c.166.166.166.437 0 .603-.166.165-.436.166-.602 0l-17.263-17.126c-.165-.165-.165-.435 0-.601.167-.166.436-.166.601-.001l17.264 17.125zm-2.855-14.067c-.195-.195-.195-.512 0-.707s.512-.195.707 0 .195.512 0 .707-.511.196-.707 0zm-7.734 12.641l-6.055 6.056-4.95-4.908 6.059-6.059 1.419 1.41-.407.407.707.707-.707.707-.707-.707-.707.707.707.707-.707.707-.707-.707-.707.707.707.707-.707.707-.707-.707-.707.708 2.121 2.121 4.657-4.657 1.398 1.387zm2.035-11.892l6.052-6.052 4.908 4.95-6.013 6.014-1.398-1.388 4.625-4.625-2.121-2.121-2.121 2.12.707.707-.708.708-.707-.707-.707.707.707.707-.707.707-.707-.708-.39.39-1.42-1.409z" />
+				<path id="close" transform="matrix(0,0,0,0,12,12)" style="transform-origin: 0px 0px 0px;" d="M23.954 21.03l-9.184-9.095 9.092-9.174-2.832-2.807-9.09 9.179-9.176-9.088-2.81 2.81 9.186 9.105-9.095 9.184 2.81 2.81 9.112-9.192 9.18 9.1z" />
+				</svg>
+			</div>
+			<h1 class="heading">Ovládací panel</h1>
+		</div>
+		<ul id="control-panel-content">
+			<li id="add-points">Pridať body</li>
+			<li id="join-points">Spojiť body</li>
+		</ul>
+	</aside>
+	<div id="remove-geometry-objects" style="display: none">
+		<img src="resources/img/delete-button.svg" alt="">
+	</div>
+	<main id="svg-wrapper">
+		<svg xmlns="http://www.w3.org/2000/svg">
+		    <defs>
+			    <pattern id="smallGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+			        <path d="M 0 0 L 20 0" style="fill: none; stroke: #000; stroke-width: 1.5; stroke-opacity: 0.18" />
+			        <path d="M 0 20 L 20 20" style="fill: none; stroke: #000; stroke-width: 1.5; stroke-opacity: 0.18" />
+			        <path d="M 0 0 L 0 20" style="fill: none; stroke: #000; stroke-width: 1.5; stroke-opacity: 0.18" />
+			        <path d="M 20 0 L 20 20" style="fill: none; stroke: #000; stroke-width: 1.5; stroke-opacity: 0.18" />
+			    </pattern>
+		    </defs>
+
+		    <rect width="100%" height="100%" fill="url(#smallGrid)" />
+		</svg>
+	</main>
+
+	<script src="resources/js/main.js"></script>
+</body>
+</html>

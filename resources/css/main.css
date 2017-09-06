@@ -1,0 +1,130 @@
+html, body {
+	font-family: "Proxima Nova";
+	color: #545859;
+	font-size: 14px;
+	user-select: none;
+	/*overflow: hidden;*/
+	width: 100%;
+	height: 100%;
+}
+
+/*html {
+	overflow: hidden;
+} */
+
+ul li {
+	list-style: none;
+}
+
+#control-panel {
+	background: #fff;
+	position: fixed;
+	top: 0;
+	right: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	border-left: 1px solid #11accd;
+	z-index: 1000000;
+}
+
+#control-panel div {
+	display: flex;
+	align-items: center;
+}
+
+.heading {
+	font-size: 14px;
+	font-weight: 600;
+	opacity: 0;
+	width: 0;
+}
+
+#remove-geometry-objects {
+	padding: 7px 8px;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	background: red;
+	z-index: -1;
+}
+
+#remove-geometry-objects img {
+	width: 21px;
+	height: auto;
+	margin: 0 0 -3px 0;
+}
+
+.settings-icon-wrapper {
+	background: #11accd;
+	cursor: pointer;
+}
+
+.settings-icon {
+	margin: 12px;
+	width: 27px;
+	height: 27px;
+}
+
+.settings-icon path {
+	fill: #fff;
+}
+
+#control-panel-content {
+	display: none;
+	opacity: 0;
+	padding: 0 18px;
+	line-height: 250%;
+	width: calc(100% - 36px) !important;
+}
+
+#control-panel-content li {
+	padding-left: 8px;
+	border-bottom: 1px solid rgba(0, 0, 0, .18);
+	cursor: pointer;
+}
+
+#svg-wrapper {
+	width: 100%;
+	height: 100%;
+	overflow: scroll;
+}
+
+#svg-wrapper div {
+	padding-right: 0 !important;
+	width: 100%;
+	height: 100%;
+}
+
+.point {
+	fill: #1F8A70;
+	stroke: #000;
+	stroke-width: 8;
+	stroke-opacity: 0;
+}
+
+.line {
+	fill: none;
+	stroke: #1F8A70;
+	stroke-width: 1.5;
+	stroke-opacity: 1;
+}
+
+.numberWrapper {
+	fill: #000;
+	font-family: Arial;
+	font-weight: 700;
+	font-size: 10px;
+}
+
+.disabled {
+	color: #9b9b9b;
+	cursor: default !important;
+}
+
+.xAxis, .yAxis {
+	fill: none;
+	stroke: #000;
+	stroke-width: 1.5;
+	stroke-opacity: 1;
+}
