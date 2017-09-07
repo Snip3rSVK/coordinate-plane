@@ -169,17 +169,15 @@ function clickAndScroll() {
 			cursor: "default",
 			onPress: function () {
 				element.svgWrapper.style.cursor = "move";
-				if (!controlPanel.usedTools.check("joinPoints")) {
+				if (!controlPanel.usedTools.check("joinPoints"))
 					pointsDraggable("cancel");
-				}
 			},
 			onDrag: function () {
 				element.svgWrapper.style.cursor = "move";
 			},
 			onRelease: function () {
-				if (!controlPanel.usedTools.check("joinPoints")) {
+				if (!controlPanel.usedTools.check("joinPoints"))
 					pointsDraggable();
-				}
 			},
 			edgeResistance: 1,
 			minimumMovement: 5
@@ -238,9 +236,9 @@ function appendFromObjProps(obj, elem, classToAdd) {
 		if (typeof obj[properties[i]] !== "function" && typeof obj[properties[i]] !== "undefined" && typeof obj[properties[i]] !== "object")
 			elemNS.setAttributeNS(null, properties[i], obj[properties[i]]);
 	}
-	if (Point.instances.length === 0) {
+	if (Point.instances.length === 0)
 		element.svg.appendChild(elemNS);
-	} else {
+	else {
 		/* inserts element before first circle element - this is particularly for inserting paths - if paths were inserted after
 		 circles then ends of paths (lines) will be "on" points if cursor enters these ends mouseleave will fire and this is
 		 unwanted. Svg works on principle "first element -> 'painted' first" (version SVG 1.1). In version SVG 2 (maybe SVG 2.1)
@@ -298,9 +296,8 @@ function addPoints() {
 	Draggable.get(element.svgWrapper).addEventListener("click", function () {
 		new Point(Math.round((element.svgWrapper.scrollLeft + Draggable.get(element.svgWrapper).pointerX) / snapBy) * snapBy, Math.round((element.svgWrapper.scrollTop + Draggable.get(element.svgWrapper).pointerY) / snapBy) * snapBy).append();
 		pointsDraggable();
-		if (Point.instances.length === 1) {
+		if (Point.instances.length === 1)
 			element.removeGeometryObjects.style.display = "initial";
-		}
 		toggleTool(element.joinPoints, function () {
 			return Point.instances.length >= 2;
 		});
@@ -364,9 +361,8 @@ function pointsDraggable() {
 		if (arguments[0] === "cancel" && Draggable.get(curr) !== undefined)
 			Draggable.get(curr).disable();
 		else if (Draggable.get(curr) === undefined || arguments[0] === "create") {
-			if (arguments[0] === "create") {
+			if (arguments[0] === "create")
 				Draggable.get(curr).kill();
-			}
 
 			curr.onmouseenter = over(curr);
 			curr.onmouseleave = out(curr);
