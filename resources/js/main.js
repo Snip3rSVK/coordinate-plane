@@ -161,9 +161,9 @@ function setupAxis() {
 }
 
 function clickAndScroll() {
-	if (arguments[0] === "cancel" && Draggable.get(element.svgWrapper) !== undefined) {
+	if (arguments[0] === "cancel" && Draggable.get(element.svgWrapper) !== undefined)
 		Draggable.get(element.svgWrapper).disable();
-	} else if (Draggable.get(element.svgWrapper) === undefined) {
+	else if (Draggable.get(element.svgWrapper) === undefined) {
 		Draggable.create(element.svgWrapper, {
 			type: "scroll",
 			cursor: "default",
@@ -187,9 +187,9 @@ function clickAndScroll() {
 		TweenMax.set(element.svgWrapper, {
 			overflow: "hidden",
 		});
-	} else if (Draggable.get(element.svgWrapper).enabled() === false) {
-		Draggable.get(element.svgWrapper).enable();
 	}
+	else if (Draggable.get(element.svgWrapper).enabled() === false)
+		Draggable.get(element.svgWrapper).enable();
 }
 
 window.addEventListener("resize", function () {
@@ -199,9 +199,9 @@ window.addEventListener("resize", function () {
 // ======== GEOMETRY OBJECTS ========
 function GeometryObject() {
 	this.elem,
-		this.style = "",
-		this.setElem = (value) => this.elem = value,
-		this.setStyle = (value) => this.style = value;
+	this.style = "",
+	this.setElem = (value) => this.elem = value,
+	this.setStyle = (value) => this.style = value;
 }
 
 Point.prototype = new GeometryObject();
@@ -209,10 +209,10 @@ Line.prototype = new GeometryObject();
 
 function Point(cx, cy, r) {
 	this.connectedLines = [],
-		this.cx = cx,
-		this.cy = cy,
-		this.r = r || 4,
-		this.append = () => appendFromObjProps(this, "circle", "point");
+	this.cx = cx,
+	this.cy = cy,
+	this.r = r || 4,
+	this.append = () => appendFromObjProps(this, "circle", "point");
 	this.addConnectedLine = (line, lineCommand) => this.connectedLines.push({
 		line: line,
 		lineCommand: lineCommand
@@ -223,9 +223,9 @@ function Point(cx, cy, r) {
 
 function Line(d) {
 	this.d = d,
-		this.append = () => appendFromObjProps(this, "path", "line"),
-		this.setD = (value) => this.d = value,
-		GeometryObject.call(this);
+	this.append = () => appendFromObjProps(this, "path", "line"),
+	this.setD = (value) => this.d = value,
+	GeometryObject.call(this);
 	Line.instances.push(this);
 }
 
@@ -320,16 +320,15 @@ function joinPoints() {
 		}
 		controlPanel.usedTools.remove("joinPoints");
 		pointsDraggable();
-		clearLines();
 		return false;
 	}
 
 	controlPanel.cancelToolsExcept("joinPoints");
 	controlPanel.usedTools.add("joinPoints");
 	pointsDraggable("cancel");
-	let line;
+
 	let beginNewLine = true;
-	let lastClicked;
+	let lastClicked = { elem: null, index: -1, lineD: null };
 
 	for (let i = 0; i < Point.instances.length; i++) {
 		const curr = Point.instances[i].elem;
@@ -342,16 +341,17 @@ function joinPoints() {
 			 and move cursor out of point - cursor type is "move" and it should be "default" */
 			element.svgWrapper.style.cursor = "default";
 			if (beginNewLine) {
-				line = new Line("");
 				beginNewLine = false;
-				lastClicked = curr;
-				line.setD(`M ${Point.instances[i].cx} ${Point.instances[i].cy}`);
-				Point.instances[i].addConnectedLine(line, "M");
-			} else if (lastClicked != curr) {
+				lastClicked.elem = curr;
+				lastClicked.index = i;
+				lastClicked.lineD = `M ${Point.instances[i].cx} ${Point.instances[i].cy}`;
+			} else if (lastClicked.elem != curr) {
+				const line = new Line();
 				beginNewLine = true;
-				lastClicked = undefined;
-				line.setD((`${line.d} L ${Point.instances[i].cx} ${Point.instances[i].cy}`).trim());
+				lastClicked.elem = null;
+				line.setD((`${lastClicked.lineD} L ${Point.instances[i].cx} ${Point.instances[i].cy}`).trim());
 				line.append();
+				Point.instances[lastClicked.index].addConnectedLine(line, "M");
 				Point.instances[i].addConnectedLine(line, "L");
 			}
 		};
@@ -361,11 +361,9 @@ function joinPoints() {
 function pointsDraggable() {
 	for (let i = 0; i < Point.instances.length; i++) {
 		const curr = Point.instances[i].elem;
-		if (arguments[0] === "cancel") {
-			if (Draggable.get(curr) !== undefined) {
-				Draggable.get(curr).disable();
-			}
-		} else if (Draggable.get(curr) === undefined || arguments[0] === "create") {
+		if (arguments[0] === "cancel" && Draggable.get(curr) !== undefined)
+			Draggable.get(curr).disable();
+		else if (Draggable.get(curr) === undefined || arguments[0] === "create") {
 			if (arguments[0] === "create") {
 				Draggable.get(curr).kill();
 			}
@@ -375,7 +373,7 @@ function pointsDraggable() {
 
 			Draggable.create(curr, {
 				bounds: element.svg,
-				onDrag: function () {
+				onDrag: function() {
 					curr.onmouseleave = null; // cancels onmouseleave
 					element.body.style.cursor = "move";
 					over(curr)();
@@ -384,13 +382,13 @@ function pointsDraggable() {
 					Point.instances[i].cy = Math.round(curr.getBoundingClientRect().top + element.svgWrapper.scrollTop + curr.getBoundingClientRect().height / 2) / snapBy * snapBy;
 					updateLines(i);
 				},
-				onPress: function () {
+				onPress: function() {
 					over(curr)();
 					clickAndScroll("cancel");
 				},
-				onDragEnd: function () {
+				onDragEnd: function() {
 					element.body.style.cursor = "default";
-					curr.onmouseleave = function () {
+					curr.onmouseleave = function() {
 						out(curr)();
 					};
 					out(curr)();
@@ -403,9 +401,9 @@ function pointsDraggable() {
 					clickAndScroll();
 				}
 			});
-		} else if (Draggable.get(curr).enabled() === false) {
-			Draggable.get(curr).enable();
 		}
+		else if (Draggable.get(curr).enabled() === false)
+			Draggable.get(curr).enable();
 	}
 }
 
@@ -419,31 +417,16 @@ function updateLines(index) {
 	}
 }
 
-function clearLines() {
-	for (let i = 0; i < Point.instances.length; i++) {
-		for (let j = 0; j < Point.instances[i].connectedLines.length; j++) {
-			const currLine = Point.instances[i].connectedLines[j].line;
-			if (currLine.elem === undefined) {
-				Point.instances[i].connectedLines.splice(j, 1);
-				j--;
-			}
-		}
-	}
-}
-
 function removePoints(index) {
-	for (let i = 0; i < Point.instances[index].connectedLines.length; i++) {
+	for (let i = 0; i < Point.instances[index].connectedLines.length; i++)
 		Point.instances[index].connectedLines[i].line.elem.remove();
-	}
 	Point.instances[index].elem.remove();
 	Point.instances.splice(index, 1);
-	if (Point.instances.length === 0) {
+	if (Point.instances.length === 0)
 		element.removeGeometryObjects.style.display = "none";
-	}
+	if (Point.instances.length < 2)
+		toggleTool(element.joinPoints, () => false);
 	pointsDraggable("create");
-	toggleTool(element.joinPoints, function () {
-		return Point.instances.length >= 2;
-	});
 }
 
 controlPanelTl.add("icons")
@@ -518,32 +501,25 @@ function toolAnim(elem, identifier) {
 }
 
 function toggleTool(elem, condFunc) {
-	if (condFunc()) {
+	if (condFunc())
 		elem.classList.remove("disabled");
-	} else {
+	else
 		elem.classList.add("disabled");
-	}
 }
 
-function toggleToolClick(elem, tool, toolFunc, condFunc = () => true) { // cond - condition
-	elem.addEventListener("click", function () {
-		if (condFunc()) {
-			if (controlPanel.usedTools.check(tool)) {
-				toolAnim(elem, tool).reverse();
-				toolFunc("cancel");
-			} else {
-				toolAnim(elem, tool).play();
-				toolFunc();
-			}
+function toggleToolAnim(elem, tool, toolFunc, condFunc = () => true) { // cond - condition
+	elem.addEventListener("click", () => {
+		if (condFunc() && controlPanel.usedTools.check(tool)) {
+			toolAnim(elem, tool).reverse();
+			toolFunc("cancel");
+		} else if (condFunc()) {
+			toolAnim(elem, tool).play();
+			toolFunc();
 		}
 	});
 }
 
-toggleToolClick(element.addPoints, "addPoints", addPoints);
-toggleToolClick(element.joinPoints, "joinPoints", joinPoints, function () {
-	return Point.instances.length >= 2;
-});
-toggleTool(element.joinPoints, function () {
-	return Point.instances.length >= 2;
-});
+toggleToolAnim(element.addPoints, "addPoints", addPoints);
+toggleToolAnim(element.joinPoints, "joinPoints", joinPoints, () => Point.instances.length >= 2); // to disable animation when clicked on join point on default
+toggleTool(element.joinPoints, () => Point.instances.length >= 2); // to disable join points tool on default
 //})();
