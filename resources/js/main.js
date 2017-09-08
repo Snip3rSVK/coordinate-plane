@@ -42,19 +42,11 @@ const controlPanel = {
 	list: {},
 	usedTools: {
 		list: [],
-		check(name) {
-			return (this.list.indexOf(name) > -1) ? true : false;
-		}, // this refers to controlPanel.usedTools here
-		add(name) {
-			return (!this.check(name)) ? this.list.push(name) : false;
-		},
-		remove(name) {
-			return (this.check(name)) ? this.list.splice(this.list.indexOf(name), 1) : false;
-		}
+		check(name) { return (this.list.indexOf(name) > -1); }, // this refers to controlPanel.usedTools here
+		add(name) { return (!this.check(name)) ? this.list.push(name) : false; },
+		remove(name) { return (this.check(name)) ? this.list.splice(this.list.indexOf(name), 1) : false; }
 	},
-	addTool(name, tool) {
-		this.list[name] = tool;
-	},
+	addTool(name, tool) { this.list[name] = tool; },
 	cancelToolsExcept(name) {
 		for (let i = 0; i < this.usedTools.list.length; i++) {
 			const currToolName = this.usedTools.list[i];
@@ -66,14 +58,16 @@ const controlPanel = {
 	}
 };
 
-let snapBy = 10;
 let identifiers = {};
-const roundToSnap = (num) => Math.round(num / (4 * snapBy)) * 4 * snapBy;
 
 const svgSettings = {
-    width: roundToSnap(element.body.clientWidth * 3),
-    height: roundToSnap(element.body.clientHeight * 3)
+	snapBy: 10
 };
+
+const roundToSnap = (num) => Math.round(num / (4 * svgSettings.snapBy)) * 4 * svgSettings.snapBy;
+
+svgSettings.width = roundToSnap(element.body.clientWidth * 3);
+svgSettings.height = roundToSnap(element.body.clientHeight * 3);
 
 const over = (elem) => scale(elem, 2, .14, Power0.easeNone, "center center");
 const out = (elem) => scale(elem, 1, .14, Power0.easeNone, "center center");
@@ -100,7 +94,7 @@ setupAxis();
 clickAndScroll();
 
 function setupSVG() {
-    element.svg.setAttribute("style", `width: ${roundToSnap(element.body.clientWidth * 3)}px; height: ${roundToSnap(element.body.clientHeight * 3)}px`);
+    element.svg.setAttribute("style", `width: ${svgSettings.width}px; height: ${svgSettings.height}px`);
 }
 
 function scrollToCenter() {
@@ -123,7 +117,7 @@ function setupAxis() {
 	numberWrapper.classList.add("numberWrapper");
 	element.svg.appendChild(numberWrapper);
 
-    let i = 2 * snapBy, j = 1;
+    let i = 2 * svgSettings.snapBy, j = 1;
     while (i < svgSettings.height / 2 || i < svgSettings.width / 2) {
         if (i < svgSettings.height / 2) {
             const textNegative = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -155,7 +149,7 @@ function setupAxis() {
             numberWrapper.appendChild(textNegative);
             numberWrapper.appendChild(textPositive);
         }
-        i += 2 * snapBy;
+        i += 2 * svgSettings.snapBy;
         j++;
     }
 }
@@ -251,7 +245,7 @@ function appendFromObjProps(obj, elem, classToAdd) {
 }
 
 function toggleEvent(elem, event, function1, function2) { // apply only once for element!
-	let eventDone = false;
+	let eventDone;
 	elem.addEventListener(event, () => {
 		if (!eventDone) {
 			function1();
@@ -294,7 +288,7 @@ function addPoints() {
 	controlPanel.cancelToolsExcept("addPoints");
 	controlPanel.usedTools.add("addPoints");
 	Draggable.get(element.svgWrapper).addEventListener("click", function () {
-		new Point(Math.round((element.svgWrapper.scrollLeft + Draggable.get(element.svgWrapper).pointerX) / snapBy) * snapBy, Math.round((element.svgWrapper.scrollTop + Draggable.get(element.svgWrapper).pointerY) / snapBy) * snapBy).append();
+		new Point(Math.round((element.svgWrapper.scrollLeft + Draggable.get(element.svgWrapper).pointerX) / svgSettings.snapBy) * svgSettings.snapBy, Math.round((element.svgWrapper.scrollTop + Draggable.get(element.svgWrapper).pointerY) / svgSettings.snapBy) * svgSettings.snapBy).append();
 		pointsDraggable();
 		if (Point.instances.length === 1)
 			element.removeGeometryObjects.style.display = "initial";
@@ -324,7 +318,6 @@ function joinPoints() {
 	controlPanel.usedTools.add("joinPoints");
 	pointsDraggable("cancel");
 
-	let beginNewLine = true;
 	let lastClicked = { elem: null, index: -1, lineD: null };
 
 	for (let i = 0; i < Point.instances.length; i++) {
@@ -337,14 +330,12 @@ function joinPoints() {
 			/* to handle strange behavior of clickAndScroll press, try comment this and click to Join Points, click to point
 			 and move cursor out of point - cursor type is "move" and it should be "default" */
 			element.svgWrapper.style.cursor = "default";
-			if (beginNewLine) {
-				beginNewLine = false;
+			if (!lastClicked.elem) {
 				lastClicked.elem = curr;
 				lastClicked.index = i;
 				lastClicked.lineD = `M ${Point.instances[i].cx} ${Point.instances[i].cy}`;
 			} else if (lastClicked.elem != curr) {
 				const line = new Line();
-				beginNewLine = true;
 				lastClicked.elem = null;
 				line.setD((`${lastClicked.lineD} L ${Point.instances[i].cx} ${Point.instances[i].cy}`).trim());
 				line.append();
@@ -373,9 +364,9 @@ function pointsDraggable() {
 					curr.onmouseleave = null; // cancels onmouseleave
 					element.body.style.cursor = "move";
 					over(curr)();
-					snap(this, curr, snapBy, snapBy)();
-					Point.instances[i].cx = Math.round(curr.getBoundingClientRect().left + element.svgWrapper.scrollLeft + curr.getBoundingClientRect().width / 2) / snapBy * snapBy; // nevymazovať round pretože ak by cx al. cy bolo desatinné číslo, tak regex vo funkcii updateLines by zle matchlo číslo (napr 19.99954) by matchlo ako ["19", "99954"];
-					Point.instances[i].cy = Math.round(curr.getBoundingClientRect().top + element.svgWrapper.scrollTop + curr.getBoundingClientRect().height / 2) / snapBy * snapBy;
+					snap(this, curr, svgSettings.snapBy, svgSettings.snapBy)();
+					Point.instances[i].cx = Math.round(curr.getBoundingClientRect().left + element.svgWrapper.scrollLeft + curr.getBoundingClientRect().width / 2) / svgSettings.snapBy * svgSettings.snapBy; // nevymazovať round pretože ak by cx al. cy bolo desatinné číslo, tak regex vo funkcii updateLines by zle matchlo číslo (napr 19.99954) by matchlo ako ["19", "99954"];
+					Point.instances[i].cy = Math.round(curr.getBoundingClientRect().top + element.svgWrapper.scrollTop + curr.getBoundingClientRect().height / 2) / svgSettings.snapBy * svgSettings.snapBy;
 					updateLines(i);
 				},
 				onPress: function() {
