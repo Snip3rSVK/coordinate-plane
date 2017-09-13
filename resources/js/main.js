@@ -58,14 +58,10 @@ const controlPanel = {
 	}
 };
 
-let identifiers = {};
+const identifiers = {};
 
-const svgSettings = {
-	snapBy: 10
-};
-
+const svgSettings = { snapBy: 10 };
 const roundToSnap = (num) => Math.round(num / (4 * svgSettings.snapBy)) * 4 * svgSettings.snapBy;
-
 svgSettings.width = roundToSnap(element.body.clientWidth * 3);
 svgSettings.height = roundToSnap(element.body.clientHeight * 3);
 
@@ -192,7 +188,7 @@ window.addEventListener("resize", function () {
 function GeometryObject() {
 	this.elem,
 	this.style = "",
-	this.setElem = (value) => this.elem = value,
+	this.setElem = (value) => this.elem = value;
 	this.setStyle = (value) => this.style = value;
 }
 
@@ -292,7 +288,7 @@ function addPoints() {
 		pointsDraggable();
 		if (Point.instances.length === 1)
 			element.removeGeometryObjects.style.display = "initial";
-		toggleTool(element.joinPoints, function () {
+		toggleToolClick(element.joinPoints, function () {
 			return Point.instances.length >= 2;
 		});
 	});
@@ -335,12 +331,11 @@ function joinPoints() {
 				lastClicked.index = i;
 				lastClicked.lineD = `M ${Point.instances[i].cx} ${Point.instances[i].cy}`;
 			} else if (lastClicked.elem != curr) {
-				const line = new Line();
+				const line = new Line(`${lastClicked.lineD} L ${Point.instances[i].cx} ${Point.instances[i].cy}`);
 				lastClicked.elem = null;
-				line.setD((`${lastClicked.lineD} L ${Point.instances[i].cx} ${Point.instances[i].cy}`).trim());
-				line.append();
 				Point.instances[lastClicked.index].addConnectedLine(line, "M");
 				Point.instances[i].addConnectedLine(line, "L");
+				line.append();
 			}
 		};
 	}
@@ -412,10 +407,11 @@ function removePoints(index) {
 	if (Point.instances.length === 0)
 		element.removeGeometryObjects.style.display = "none";
 	if (Point.instances.length < 2)
-		toggleTool(element.joinPoints, () => false);
+		toggleToolClick(element.joinPoints, () => false);
 	pointsDraggable("create");
 }
 
+// ======== CONTROL PANEL ========
 controlPanelTl.add("icons")
 	.to(element.settings, .23, {
 		ease: Power3.easeOut,
@@ -467,7 +463,7 @@ function Tool(toolFunc) {
 controlPanel.addTool("addPoints", new Tool(addPoints));
 controlPanel.addTool("joinPoints", new Tool(joinPoints));
 
-function toolAnim(elem, identifier) {
+function getToolTl(elem, identifier) {
 	if (identifiers[identifier] === undefined) {
 		let tl = new TimelineMax({
 			paused: true
@@ -482,12 +478,12 @@ function toolAnim(elem, identifier) {
 			}, "begin=+0.1");
 		identifiers[identifier] = tl;
 		return tl;
-	} else {
-		return identifiers[identifier];
 	}
+	else
+		return identifiers[identifier];
 }
 
-function toggleTool(elem, condFunc) {
+function toggleToolClick(elem, condFunc) {
 	if (condFunc())
 		elem.classList.remove("disabled");
 	else
@@ -497,10 +493,10 @@ function toggleTool(elem, condFunc) {
 function toggleToolAnim(elem, tool, toolFunc, condFunc = () => true) { // cond - condition
 	elem.addEventListener("click", () => {
 		if (condFunc() && controlPanel.usedTools.check(tool)) {
-			toolAnim(elem, tool).reverse();
+			getToolTl(elem, tool).reverse();
 			toolFunc("cancel");
 		} else if (condFunc()) {
-			toolAnim(elem, tool).play();
+			getToolTl(elem, tool).play();
 			toolFunc();
 		}
 	});
@@ -508,5 +504,5 @@ function toggleToolAnim(elem, tool, toolFunc, condFunc = () => true) { // cond -
 
 toggleToolAnim(element.addPoints, "addPoints", addPoints);
 toggleToolAnim(element.joinPoints, "joinPoints", joinPoints, () => Point.instances.length >= 2); // to disable animation when clicked on join point on default
-toggleTool(element.joinPoints, () => Point.instances.length >= 2); // to disable join points tool on default
+toggleToolClick(element.joinPoints, () => Point.instances.length >= 2); // to disable join points tool on default
 //})();
