@@ -328,7 +328,7 @@
 			else if (Draggable.get(curr) === undefined || arguments[0] === "create") {
 				if (arguments[0] === "create")
 					Draggable.get(curr).kill();
-
+ 
 				curr.onmouseenter = over(curr);
 				curr.onmouseleave = out(curr);
 
